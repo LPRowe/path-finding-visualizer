@@ -222,10 +222,10 @@ class A_Star(object):
         
         self.t = target
         self.start = start
-        self.q = [(self.dist(start), 0, start)] # (Manhattan dist to target, location)
+        self.r = {start : 0} #shortest distance to any given point
+        self.q = [(0, 0, start)] # (Manhattan dist to target, steps taken, location)
         self.visited = set([start])
         self.steps = 1
-        self.r = {start : 0} #shortest distance to any given point
         
         #Store graph of shortest path in a hash table
         self.g = {}
@@ -243,7 +243,7 @@ class A_Star(object):
         self.r = {self.start : 0}
         
     def dist(self, loc):
-        h1 = abs(loc[0] - self.start[0]) + abs(loc[1] - self.start[1]) #dijkstra
+        h1 = self.r[loc] #dijkstra
         h2 = abs(loc[0] - self.t[0]) + abs(loc[1] - self.t[1]) #greedy
         return int((1-self.greed)*h1 + self.greed*h2)
     
