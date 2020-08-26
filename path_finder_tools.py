@@ -32,6 +32,24 @@ class Maze(object):
         '''
         self.arr = self.construct()
     
+    def clear(self) -> None:
+        '''
+        Sets all maze value to zero
+        '''
+        for r in range(self.h):
+            for c in range(self.w):
+                self.arr[r][c] = 0
+    
+    def image_overlay(self, image) -> None:
+        '''
+        overlays an array onto the current maze
+        '''
+        image_columns = len(image[0])
+        start_x = (self.w-image_columns)//2
+        for r in range(self.h):
+            for c in range(len(image[0])):
+                self.arr[r][c+start_x] = image[r][c]
+    
     def draw(self, surface, x, y, dx, dy, color = (150, 150, 150)) -> None:
         '''
         Draws the array on a surface

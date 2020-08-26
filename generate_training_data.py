@@ -185,7 +185,7 @@ if __name__ == '__main__':
     4. Convert Array to 1D and save Array + optimal greediness value
     5. Repeat steps 1-4 for array densities between 9 and 35 percent (by 2)
     '''
-    import numpy as np
+    import matplotlib.pyplot as plt
     
     data = []
     
@@ -194,10 +194,13 @@ if __name__ == '__main__':
     start = (15, 1)
     target = (15, 60)
     density = np.linspace(0.09, 0.35, 14)
+    N = 400 #sample size
     
     for i in range(len(density)):
         print(i,'/',len(density))
-        for _ in range(100):
+        for j in range(N):
+            if not j%400:
+                print(j,'/',N)
             arr = Maze(rows, columns, density[i])
             
             BFS = Double_Ended_BFS(start, target, arr.arr)
@@ -232,6 +235,21 @@ if __name__ == '__main__':
     a = np.array(data)
     np.savetxt('validation_data.csv',a,delimiter=',')
     
+    greed = [[] for _ in range(14)]
+    for r in range(len(a)):
+        greed[r//N].append(a[r][-1])
+    
+    plt.close('all')
+    plt.figure(dpi = 300)
+    densities = [0, 4, 8, 13]
+    labels = [r'$\rho$ = '+str(9+2*i)+'%' for i in densities]
+    g = [greed[i] for i in densities]
+    plt.hist(g, label = labels)
+    plt.legend()
+    plt.xlabel('Optimal Greediness')
+    plt.ylabel('Count')
+    plt.title('Optimal Greediness Distribution\nfor Various Maze Densities '+r'($\rho$)')
+    plt.show()
     
     
     

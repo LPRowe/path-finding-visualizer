@@ -1,4 +1,6 @@
 test_data.csv
 training_data.csv
 validation_data.csv
+models\*
 GUI layout.pptx
+*.h5

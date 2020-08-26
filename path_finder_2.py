@@ -13,6 +13,9 @@ import time
 import heapq
 import math
 import glob
+import tensorflow as tf
+import tensorflow.keras as keras
+import skimage
 
 from path_finder_tools import Djikstra, Double_Ended_BFS, A_Star
 from path_finder_tools import Maze, A_Star_Greed, Game_Speed, Background, Score
@@ -24,6 +27,13 @@ pygame.init()
 pygame.display.set_caption('Path Finder')
 logo=pygame.image.load('./graphics/simple-logo.png')
 pygame.display.set_icon(logo)
+
+# Load CNN that has been trained to predict the optimal greed value
+def half_sigmoid(z):
+    return 0.5*(1+(1/(1+tf.math.exp(-z))))
+
+model_file = './models/cnn_greed_model_3200.h5'
+greed_model = keras.models.load_model(model_file, custom_objects = {'half_sigmoid': half_sigmoid})
 
 def main():
     
@@ -50,12 +60,17 @@ def main():
     
     
     #Maze Settings
-    rows = 40
+    rows = 30
     pixels_per_square = bg_height/rows
     columns = int(rows*bg_width//bg_height)
     bg = Background(bg_width, bg_height, rows, columns, 0, gui_height)
     maze_density = 0.35
     arr = Maze(rows, columns, maze_density)
+    
+    #Pedict optimal greed value from maze array
+    input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+    input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
+    optimal_greed = greed_model.predict(input_arr)[0][0]
     
     #Draw background and array outside of loop
     surface.fill(surface_color)
@@ -86,7 +101,7 @@ def main():
     target = (rows//2, columns - 2)
     
     algorithm = 3
-    solvers = [A_Star(start, target, arr.arr, current_color, visited_color, target_color),
+    solvers = [A_Star(start, target, arr.arr, current_color, visited_color, target_color, greed = optimal_greed),
                Djikstra(start, target, arr.arr, current_color, visited_color, target_color),
                Double_Ended_BFS(start, target, arr.arr, current_color, visited_color, target_color)]
     solver = solvers[1]
@@ -105,12 +120,12 @@ def main():
     
     #Preset Maze Files
     preset_mazes = glob.glob('./graphics/maze_images/*')
+    preset_maze_index = 0
     
     pause = False
     run = False
 
     while True:
-        
         time.sleep(sleep_time) #slow down run speed for all algorithms besides A*
         
         event = pygame.event.poll()
@@ -135,7 +150,8 @@ def main():
             pause = not pause
         elif keys[pygame.K_i]:
             rows = 80
-            preset_image = Edge_Detect(random.choice(preset_mazes), rows = rows)
+            preset_image = Edge_Detect(preset_mazes[preset_maze_index%len(preset_mazes)], rows = rows)
+            preset_maze_index += 1
             pixels_per_square = bg_height/rows
             columns = int(rows*bg_width//bg_height)
             
@@ -151,16 +167,25 @@ def main():
             arr.draw(surface, grid_width,
                      gui_height+grid_width, bg_height / rows, bg_height / rows)
             bg.draw(surface)
+            
+            #Pedict optimal greed value from maze array
+            input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+            input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
+            optimal_greed = greed_model.predict(input_arr)[0][0]
+            greed.greed_val = optimal_greed
+            print(optimal_greed)
                        
             #update solvers (also update target, source, R, C)
             start, target = (rows//2, 1), (rows//2, columns - 2)
-            solvers = [A_Star(start, target, arr.arr, current_color, visited_color, target_color),
+            solvers = [A_Star(start, target, arr.arr, current_color, visited_color, target_color, greed = optimal_greed),
                        Djikstra(start, target, arr.arr, current_color, visited_color, target_color),
                        Double_Ended_BFS(start, target, arr.arr, current_color, visited_color, target_color)]
                        
             solver = solvers[algorithm%3]
             solver.draw(surface, grid_width, gui_height+grid_width, 
                         bg_height / rows, bg_height / rows)
+            greed.draw(surface)
+
         
         #Handle Mouse Clicks for buttons
         mouse = pygame.mouse
@@ -207,12 +232,21 @@ def main():
                                 gui_height+grid_width, bg_height / rows, bg_height / rows)
                        bg.draw(surface)
                        
+                       #Pedict optimal greed value from maze array
+                       input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
+                       optimal_greed = greed_model.predict(input_arr)[0][0]
+                       greed.greed_val = optimal_greed
+                       
                        #update solvers
+                       solvers[0].greed = optimal_greed
                        for s in solvers:
                            s.arr = arr.arr
                        
                        solver.draw(surface, grid_width, gui_height+grid_width, 
                                    bg_height / rows, bg_height / rows)
+                       greed.draw(surface)
+
                            
                    elif button == 'clear_grid':
                        print('a')
@@ -227,7 +261,11 @@ def main():
                                 gui_height+grid_width, bg_height / rows, bg_height / rows)
                        bg.draw(surface)
                       
-                       #Update all solvers
+                       #Update all solvers and greed val
+                       optimal_greed = 1
+                       greed.greed_val = optimal_greed
+                       solvers[0].greed = 1
+                       
                        for s in solvers:
                            s.arr = arr.arr
                        solver.draw(surface, grid_width, gui_height+grid_width, 
@@ -238,6 +276,12 @@ def main():
                        
                        arr = Maze(rows, columns, maze_density)
                        
+                       #Pedict optimal greed value from maze array
+                       input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
+                       optimal_greed = greed_model.predict(input_arr)[0][0]
+                       greed.greed_val = optimal_greed
+                       
                        #Redraw background and array outside of loop
                        surface.fill(surface_color)
                        arr.draw(surface, grid_width,
@@ -245,11 +289,14 @@ def main():
                        bg.draw(surface)
                        
                        #update solvers
+                       solvers[0].greed = optimal_greed
                        for s in solvers:
                            s.arr = arr.arr
                        
                        solver.draw(surface, grid_width, gui_height+grid_width, 
                                    bg_height / rows, bg_height / rows)
+                       greed.draw(surface)
+
                    elif button in ['greed_up', 'greed_down']:
                        greed_val = solvers[0].greed
                        greed_val += 0.02 if button == 'greed_up' else -0.02
@@ -274,15 +321,23 @@ def main():
                                 gui_height+grid_width, bg_height / rows, bg_height / rows)
                        bg.draw(surface)
                        
+                       #Pedict optimal greed value from maze array
+                       input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
+                       optimal_greed = greed_model.predict(input_arr)[0][0]
+                       greed.greed_val = optimal_greed
+                       
                        #update solvers (also update target, source, R, C)
                        start, target = (rows//2, 1), (rows//2, columns - 2)
-                       solvers = [A_Star(start, target, arr.arr, current_color, visited_color, target_color),
+                       solvers = [A_Star(start, target, arr.arr, current_color, visited_color, target_color, greed = optimal_greed),
                                   Djikstra(start, target, arr.arr, current_color, visited_color, target_color),
                                   Double_Ended_BFS(start, target, arr.arr, current_color, visited_color, target_color)]
                        
                        solver = solvers[algorithm%3]
                        solver.draw(surface, grid_width, gui_height+grid_width, 
                                    bg_height / rows, bg_height / rows)
+                       greed.draw(surface)
+
                         
                         
         elif mouse.get_pressed()[0] or mouse.get_pressed()[2]:
@@ -299,10 +354,19 @@ def main():
             arr.draw(surface, grid_width,
                      gui_height+grid_width, bg_height / rows, bg_height / rows)
             bg.draw(surface)
+            
+            #Pedict optimal greed value from maze array
+            input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+            input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
+            optimal_greed = greed_model.predict(input_arr)[0][0]
+            greed.greed_val = optimal_greed
            
             #update solvers
+            solvers[0].greed = optimal_greed
             for s in solvers:
                 s.arr[r][c] = arr.arr[r][c]
+            greed.draw(surface)
+
         
         if run:
             if not pause:
