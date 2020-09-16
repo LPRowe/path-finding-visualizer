@@ -13,6 +13,29 @@ import time
 import heapq
 import math
 
+def tile_resize(arr, target_size = (30, 62)):
+    '''
+    :arr: Array of any size
+    returns array of dimensions (30 by 62)
+    
+    Motivation: Convolutional Nerual Net was trained on mazes with dimensions 30 by 62.  Rescaling
+    larger/smaller mazes to this size seems to adversely affect the CNN's predictive capabilities.  
+    
+    Resizing the array by tiling the array (if array is too small) or by taking a sub-sample of
+    the array (if the array is too large) will likely improve the CNN's ability to classify mazes.
+    '''
+    TR, TC = target_size
+    R, C = len(arr), len(arr[0])
+    if R > 30:
+        res = [row[(C//2)-(TC//2):(C//2)+(TC//2)] for row in arr[(R//2)-(TR//2):(R//2)+(TR//2)]]
+    else:
+        res = [[0]*TC for _ in range(TR)]
+        for i in range(TR):
+            for j in range(TC):
+                res[i][j] = arr[i%R][j%C]
+    return res
+    
+
 class Maze(object):
     def __init__(self, height, width, density):
         self.w = width
@@ -331,6 +354,7 @@ class A_Star_Greed(object):
         self.font_color = (235,235,235)
         
     def draw(self, surface):
+        
         score_text = self.font.render(str(int(100*self.greed_val))+'%',1,self.font_color)
         surface.blit(score_text, (420, 18))
 

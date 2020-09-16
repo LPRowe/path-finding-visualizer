@@ -19,9 +19,9 @@ import skimage
 
 from path_finder_tools import Djikstra, Double_Ended_BFS, A_Star
 from path_finder_tools import Maze, A_Star_Greed, Game_Speed, Background, Score
+from path_finder_tools import tile_resize
 
 from edge_detect_image import Edge_Detect
-
 
 pygame.init()
 pygame.display.set_caption('Path Finder')
@@ -68,7 +68,8 @@ def main():
     arr = Maze(rows, columns, maze_density)
     
     #Pedict optimal greed value from maze array
-    input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+    #input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+    input_arr = arr.arr if (rows == 30) else tile_resize(arr.arr)
     input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
     optimal_greed = greed_model.predict(input_arr)[0][0]
     
@@ -169,7 +170,8 @@ def main():
             bg.draw(surface)
             
             #Pedict optimal greed value from maze array
-            input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+            #input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+            input_arr = arr.arr if (rows == 30) else tile_resize(arr.arr)
             input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
             optimal_greed = greed_model.predict(input_arr)[0][0]
             greed.greed_val = optimal_greed
@@ -233,7 +235,8 @@ def main():
                        bg.draw(surface)
                        
                        #Pedict optimal greed value from maze array
-                       input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       #input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       input_arr = arr.arr if (rows == 30) else tile_resize(arr.arr)
                        input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
                        optimal_greed = greed_model.predict(input_arr)[0][0]
                        greed.greed_val = optimal_greed
@@ -277,7 +280,8 @@ def main():
                        arr = Maze(rows, columns, maze_density)
                        
                        #Pedict optimal greed value from maze array
-                       input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       #input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       input_arr = arr.arr if (rows == 30) else tile_resize(arr.arr)
                        input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
                        optimal_greed = greed_model.predict(input_arr)[0][0]
                        greed.greed_val = optimal_greed
@@ -322,7 +326,8 @@ def main():
                        bg.draw(surface)
                        
                        #Pedict optimal greed value from maze array
-                       input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       #input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+                       input_arr = arr.arr if (rows == 30) else tile_resize(arr.arr)
                        input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
                        optimal_greed = greed_model.predict(input_arr)[0][0]
                        greed.greed_val = optimal_greed
@@ -356,7 +361,8 @@ def main():
             bg.draw(surface)
             
             #Pedict optimal greed value from maze array
-            input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+            #input_arr = arr.arr if (rows == 30) else skimage.transform.resize(np.array(arr.arr), (30, 62))
+            input_arr = arr.arr if (rows == 30) else tile_resize(arr.arr)
             input_arr = np.reshape(input_arr, [-1, 30, 62, 1])
             optimal_greed = greed_model.predict(input_arr)[0][0]
             greed.greed_val = optimal_greed
