@@ -6,7 +6,6 @@ Created on Sun Aug 23 19:18:00 2020
 """
 
 import pygame
-import numpy as np
 import random
 from typing import List
 import time

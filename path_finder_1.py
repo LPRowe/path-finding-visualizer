@@ -6,12 +6,8 @@ Created on Thu Aug 20 23:07:03 2020
 """
 
 import pygame
-import numpy as np
 import random
-from typing import List
 import time
-import heapq
-import math
 import glob
 
 from path_finder_tools import Djikstra, Double_Ended_BFS, A_Star
