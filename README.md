@@ -16,9 +16,11 @@ Use the reset button to clear the previous solution before running a new solutio
 
 ### Colors
 
-Blue means start point, target point, and optimal path.<br>
-Orange means visited nodes.<br>
-Green means nodes are currenlty in the queue to be visited.<br>
+Grey pixels are obstacles.
+Black pixels are unvisited open spaces.
+Blue pixels mark the start point, target point, and optimal path.<br>
+Orange pixels are visited nodes.<br>
+Green pixels are nodes that are currenlty in the queue to be visited.<br><br>
 
 
 
