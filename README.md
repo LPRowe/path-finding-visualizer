@@ -2,7 +2,8 @@
 
 Readme is under construction, cleaner details to come...<br><br>
 
-###Intro
+### Intro
+
 A path finding visualizer that implements BFS, Multisource BFS, and A* algorithms to find the shortest path between the two blue points.<br>
 Press i to spawn pdf images where a sobel filter is applied and the images are converted to maze like arrays.<br>
 Press f (fast) or s (slow) to adjust program's frame rate.<br>
