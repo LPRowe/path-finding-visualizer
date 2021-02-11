@@ -4,14 +4,14 @@ Created on Wed Aug 26 01:31:20 2020
 
 @author: rowe1
 """
+import sys
+
+import numpy as np
+import matplotlib.pyplot as plt
 
 import skimage
 import skimage.feature
 import skimage.viewer
-import sys
-import matplotlib.pyplot as plt
-import numpy as np
-
 
 class Edge_Detect(object):
     def __init__(self, file, rows = None, sigma = 1.0, low_threshold = None, high_threshold = None):

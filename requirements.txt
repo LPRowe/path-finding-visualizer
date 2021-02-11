@@ -1,3 +1,5 @@
 pygame
 numpy
 glob2
+matplotlib
+scikit-image
