@@ -96,7 +96,7 @@ def main():
     greed = A_Star_Greed(solvers[0].greed)
     
     #Limit game speed
-    sleep_time = 0.03
+    sleep_time = 0.00
     game_speed = Game_Speed(sleep_time)
     
     #Preset Maze Files
