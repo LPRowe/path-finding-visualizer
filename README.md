@@ -32,7 +32,7 @@ Method 1: Click the Gitpod button below - wait a minute - pop the window out by 
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://github.com/LPRowe/union-find-drawing-game)
 
-Method 2: Clone this repo and run union_find_drawing_demo.py in python3, dependencies are listed in requirements.txt
+Method 2: Clone this repo and run path_finder_2.py in python3, dependencies are listed in requirements.txt, if you do not already have TensorFlow installed, it may be simpler to just use path_finder_1.  It has all of the same features except that it does not predict the optimal greediness for A\*.
 
 <img src="./graphics/boid_pop.png">
 
